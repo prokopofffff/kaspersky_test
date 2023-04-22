@@ -6,6 +6,7 @@ import subprocess
 app = FastAPI()
 
 cmd = "systemctl start Bluetooth.service"
+#cmd = "python ./kaspersky_test/app/process.py"
 pid = -1
 process = ""
 flag = False
@@ -17,18 +18,6 @@ def hello():
 @app.get("/api/docs")
 def getDocs():
     return RedirectResponse("/docs")
-
-'''
-@app.post("/api/start")
-def start():
-    try:
-        process = subprocess.Popen(cmd.split(), stdout = subprocess.PIPE)
-        pid = process.pid
-        print('Child process id:', pid)
-        flag = True
-    except Exception as ex:
-        return "Can't run a process"
-'''
 
 @app.post("/api/start")
 def start():
