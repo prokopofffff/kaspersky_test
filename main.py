@@ -1,52 +1,50 @@
 from fastapi import FastAPI
+from fastapi.responses import RedirectResponse
 import os
-import time
+import subprocess
 
 app = FastAPI()
 
+cmd = "systemctl start Bluetooth.service"
 pid = -1
+process = ""
+flag = False
 
 @app.get("/api/docs")
 def getDocs():
-    pass
+    return RedirectResponse("/docs")
 
-@app.post("/api/start_printpi")
+@app.post("/api/start")
 def start():
-    if pid == -1:
-        pid = os.fork()
-        if pid:
-            print('Child process id:', pid)
-            pi = ""
-            with open("pi.txt", "r") as file:
-                pi = file.readline()
-            for i in range(0, len(pi) - 6, 6):
-                print(pi[i : i + 6], end = '')
-                time.sleep(1)
-            pid = -1
-        else:
-            print("Can't run a process")
-    else:
-        print("Can't run a process")
+    try:
+        process = subprocess.Popen(cmd.split(), stdout = subprocess.PIPE)
+        pid = process.pid
+        print('Child process id:', pid)
+        flag = True
+    except Exception as ex:
+        return "Can't run a process"
 
 
-@app.post("/api/stop_printpi")
+@app.post("/api/stop")
 def stop():
-    if pid != -1:
+    try:
+        os.getpgid(pid)
         os.kill(pid, 0)
-    else:
-        print("Process has already stopped")
+    except Exception as ex:
+        return "Process has already stopped"
 
 
-@app.get("/api/status_printpi")
+@app.get("/api/status")
 def status():
-    if pid == -1:
+    try:
+        os.getpgid(pid)
         return "Not launched"
-    else:
+    except Exception as ex:
         return "Launched"
 
 @app.get("/api/pn/result")
 def result():
-    if pid != -1:
-        pass
+    if flag:
+        return process.stdout
     else:
-        pass
+        return "404 Not Found"
