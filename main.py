@@ -10,6 +10,10 @@ pid = -1
 process = ""
 flag = False
 
+@app.get("/")
+def hello():
+    return "hello world"
+
 @app.get("/api/docs")
 def getDocs():
     return RedirectResponse("/docs")
