@@ -1,12 +1,12 @@
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
+import time
 import os
 import subprocess
 
 app = FastAPI()
 
-cmd = "systemctl start Bluetooth.service"
-#cmd = "python ./kaspersky_test/app/process.py"
+cmd = "python kaspersky_test/app/process.py"
 pid = -1
 process = ""
 flag = False
